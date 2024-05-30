@@ -5,7 +5,10 @@ Module for filtering PII in log messages.
 
 import re
 import logging
-from typing import List
+from typing import List, Tuple
+
+# Define PII_FIELDS constant
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(
@@ -53,3 +56,24 @@ class RedactingFormatter(logging.Formatter):
             self.fields, self.REDACTION, original_message, self.SEPARATOR
         )
         return redacted_message
+
+
+def get_logger() -> logging.Logger:
+    """
+    Creates and returns a logger named 'user_data' with a stream handler
+    using RedactingFormatter.
+
+    Returns:
+        A logging.Logger object.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    formatter = RedactingFormatter(list(PII_FIELDS))
+    stream_handler.setFormatter(formatter)
+
+    logger.addHandler(stream_handler)
+
+    return logger
