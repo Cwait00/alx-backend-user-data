@@ -5,6 +5,7 @@ Module for password encryption using bcrypt.
 
 import bcrypt
 
+
 def hash_password(password: str) -> bytes:
     """
     Hashes a password string using bcrypt.
@@ -18,8 +19,9 @@ def hash_password(password: str) -> bytes:
     # Generate a salt and hash the password
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    
+
     return hashed_password
+
 
 if __name__ == "__main__":
     # Example usage
