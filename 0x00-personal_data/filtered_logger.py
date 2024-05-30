@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Module for filtering PII in log messages.
+Module for filtering PII in log messages and connecting to a secure database.
 """
 
+import os
 import re
 import logging
+import mysql.connector
 from typing import List, Tuple
+
 
 # Define PII_FIELDS constant
 PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
@@ -77,3 +80,29 @@ def get_logger() -> logging.Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Returns a connector to the database.
+
+    Uses credentials from environment variables:
+    - PERSONAL_DATA_DB_USERNAME
+    - PERSONAL_DATA_DB_PASSWORD
+    - PERSONAL_DATA_DB_HOST
+    - PERSONAL_DATA_DB_NAME
+
+    Returns:
+        A MySQLConnection object.
+    """
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    database = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    return mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database
+    )
