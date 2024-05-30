@@ -106,3 +106,41 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         host=host,
         database=database
     )
+
+
+def main():
+    """
+    Retrieves all rows in the users table and logs each row in a filtered
+    format.
+    """
+    logger = get_logger()
+
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users;")
+        rows = cursor.fetchall()
+
+        for row in rows:
+            filtered_data = {
+                key: filter_datum(PII_FIELDS, "***", str(value), ";")
+                for key, value in row.items()
+            }
+            log_message = "; ".join(
+                f"{key}={value}" for key, value in filtered_data.items()
+            )
+            logger.info(log_message)
+
+    except mysql.connector.Error as err:
+        print(f"Error connecting to MySQL: {err}")
+
+    finally:
+        if 'db' in locals() and db.is_connected():
+            cursor.close()
+            db.close()
+            logger.info("MySQL connection closed")
+
+
+# Run main function if executed directly
+if __name__ == "__main__":
+    main()
