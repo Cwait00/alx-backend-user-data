@@ -5,6 +5,8 @@ SessionAuth module
 
 import uuid
 from api.v1.auth.auth import Auth
+from models.user import User
+import os  # Importing os module to use os.getenv
 
 
 class SessionAuth(Auth):
@@ -20,24 +22,26 @@ class SessionAuth(Auth):
             return None
         return request.headers.get('Authorization')
 
+    def session_cookie(self, request=None):
+        """ Returns a cookie value from a request """
+        if request is None:
+            return None
+        session_name = os.getenv("SESSION_NAME")
+        if session_name is None:
+            return None
+        return request.cookies.get(session_name)
+
     def current_user(self, request=None):
         """ Returns the current user by retrieving from session ID cookie """
         if request is None:
             return None
-        session_cookie = request.cookies.get('_my_session_id')
-        return self.user_id_by_session_cookie(session_cookie)
-
-    def user_id_by_session_cookie(self, session_cookie_value):
-        """
-        Retrieve user ID based on session cookie value.
-
-        Replace this mock implementation with actual logic to retrieve
-        user ID from session data or database.
-        """
-        if session_cookie_value in self.user_id_by_session_id:
-            return self.user_id_by_session_id[session_cookie_value]
-        else:
-            return None  # Invalid or expired session
+        session_cookie = self.session_cookie(request)
+        if session_cookie is None:
+            return None
+        user_id = self.user_id_for_session_id(session_cookie)
+        if user_id is None:
+            return None
+        return User.get(user_id)
 
     def create_session(self, user_id: str = None) -> str:
         """
