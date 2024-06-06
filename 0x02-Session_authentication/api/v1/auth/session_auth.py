@@ -4,9 +4,9 @@ SessionAuth module
 """
 
 import uuid
+import os  # Importing os module to use os.getenv
 from api.v1.auth.auth import Auth
 from models.user import User
-import os  # Importing os module to use os.getenv
 
 
 class SessionAuth(Auth):
@@ -74,58 +74,28 @@ class SessionAuth(Auth):
             return None
         return self.user_id_by_session_id.get(session_id)
 
+    def destroy_session(self, request=None) -> bool:
+        """
+        Deletes the user session / logout.
 
-if __name__ == "__main__":
-    sa = SessionAuth()
+        Args:
+            request (flask.Request): The request object containing the
+            session ID cookie.
 
-    user_id_session_id_type = type(sa.user_id_by_session_id)
-    print(f"{user_id_session_id_type}: {sa.user_id_by_session_id}")
+        Returns:
+            bool: True if the session was successfully destroyed,
+            False otherwise.
+        """
+        if request is None:
+            return False
 
-    user_id = None
-    session = sa.create_session(user_id)
-    print(f"{user_id} => {session}: {sa.user_id_by_session_id}")
+        session_id = self.session_cookie(request)
+        if not session_id:
+            return False
 
-    user_id = 89
-    session = sa.create_session(user_id)
-    print(f"{user_id} => {session}: {sa.user_id_by_session_id}")
+        user_id = self.user_id_for_session_id(session_id)
+        if not user_id:
+            return False
 
-    user_id = "abcde"
-    session = sa.create_session(user_id)
-    print(f"{user_id} => {session}: {sa.user_id_by_session_id}")
-
-    user_id = "fghij"
-    session = sa.create_session(user_id)
-    print(f"{user_id} => {session}: {sa.user_id_by_session_id}")
-
-    user_id = "abcde"
-    session = sa.create_session(user_id)
-    print(f"{user_id} => {session}: {sa.user_id_by_session_id}")
-
-    tmp_session_id = None
-    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
-    print(f"{tmp_session_id} => {tmp_user_id}")
-
-    tmp_session_id = 89
-    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
-    print(f"{tmp_session_id} => {tmp_user_id}")
-
-    tmp_session_id = "doesntexist"
-    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
-    print(f"{tmp_session_id} => {tmp_user_id}")
-
-    tmp_session_id = session
-    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
-    print(f"{tmp_session_id} => {tmp_user_id}")
-
-    tmp_session_id = session
-    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
-    print(f"{tmp_session_id} => {tmp_user_id}")
-
-    session_1_bis = sa.create_session(user_id)
-    print(f"{user_id} => {session_1_bis}: {sa.user_id_by_session_id}")
-
-    tmp_user_id = sa.user_id_for_session_id(session_1_bis)
-    print(f"{session_1_bis} => {tmp_user_id}")
-
-    tmp_user_id = sa.user_id_for_session_id(session)
-    print(f"{session} => {tmp_user_id}")
+        del self.user_id_by_session_id[session_id]
+        return True
