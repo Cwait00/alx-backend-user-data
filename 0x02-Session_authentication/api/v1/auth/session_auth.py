@@ -56,6 +56,20 @@ class SessionAuth(Auth):
         self.user_id_by_session_id[session_id] = user_id
         return session_id
 
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """
+        Returns a User ID based on a Session ID.
+
+        Args:
+            session_id (str): The Session ID to look up.
+
+        Returns:
+            str: The User ID associated with the Session ID.
+        """
+        if session_id is None or not isinstance(session_id, str):
+            return None
+        return self.user_id_by_session_id.get(session_id)
+
 
 if __name__ == "__main__":
     sa = SessionAuth()
@@ -82,3 +96,32 @@ if __name__ == "__main__":
     user_id = "abcde"
     session = sa.create_session(user_id)
     print(f"{user_id} => {session}: {sa.user_id_by_session_id}")
+
+    tmp_session_id = None
+    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
+    print(f"{tmp_session_id} => {tmp_user_id}")
+
+    tmp_session_id = 89
+    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
+    print(f"{tmp_session_id} => {tmp_user_id}")
+
+    tmp_session_id = "doesntexist"
+    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
+    print(f"{tmp_session_id} => {tmp_user_id}")
+
+    tmp_session_id = session
+    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
+    print(f"{tmp_session_id} => {tmp_user_id}")
+
+    tmp_session_id = session
+    tmp_user_id = sa.user_id_for_session_id(tmp_session_id)
+    print(f"{tmp_session_id} => {tmp_user_id}")
+
+    session_1_bis = sa.create_session(user_id)
+    print(f"{user_id} => {session_1_bis}: {sa.user_id_by_session_id}")
+
+    tmp_user_id = sa.user_id_for_session_id(session_1_bis)
+    print(f"{session_1_bis} => {tmp_user_id}")
+
+    tmp_user_id = sa.user_id_for_session_id(session)
+    print(f"{session} => {tmp_user_id}")
