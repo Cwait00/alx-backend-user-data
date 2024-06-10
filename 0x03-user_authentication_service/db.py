@@ -42,7 +42,8 @@ class DB:
         return new_user
 
     def find_user_by(self, **kwargs) -> User:
-        """Find a user by arbitrary keyword arguments and return the first match.
+        """Find a user by arbitrary keyword arguments and return the
+        first match.
         """
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
@@ -53,3 +54,14 @@ class DB:
             raise NoResultFound("No user found with the given parameters")
         except Exception:
             raise InvalidRequestError("Invalid query parameters")
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """Update a user's attributes and commit changes to the database.
+        """
+        user = self.find_user_by(id=user_id)
+        for key, value in kwargs.items():
+            if hasattr(user, key):
+                setattr(user, key, value)
+            else:
+                raise ValueError(f"Invalid attribute: {key}")
+        self._session.commit()
