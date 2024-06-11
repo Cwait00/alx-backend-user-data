@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Main file for testing DB module functionalities
+Main file for testing DB module functionalities and password hashing
 """
 from user import User
 from db import DB
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
+from auth import _hash_password
 
 
 def print_user_table_info() -> None:
@@ -62,8 +63,14 @@ def test_update_user() -> None:
         print("Error")
 
 
+def test_hash_password() -> None:
+    """Test the _hash_password method"""
+    print(_hash_password("Hello Holberton"))
+
+
 if __name__ == "__main__":
     print_user_table_info()
     test_add_user()
     test_find_user_by()
     test_update_user()
+    test_hash_password()
