@@ -4,9 +4,9 @@ Main file for testing DB module functionalities and password hashing
 """
 from user import User
 from db import DB
+from auth import Auth, _hash_password
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from auth import _hash_password
 
 
 def print_user_table_info() -> None:
@@ -68,9 +68,29 @@ def test_hash_password() -> None:
     print(_hash_password("Hello Holberton"))
 
 
+def test_register_user() -> None:
+    """Test the register_user method of Auth class"""
+    email = 'me@me.com'
+    password = 'mySecuredPwd'
+    auth = Auth()
+
+    try:
+        user = auth.register_user(email, password)
+        print("successfully created a new user!")
+    except ValueError as err:
+        print(f"could not create a new user: {err}")
+
+    try:
+        user = auth.register_user(email, password)
+        print("successfully created a new user!")
+    except ValueError as err:
+        print(f"could not create a new user: {err}")
+
+
 if __name__ == "__main__":
     print_user_table_info()
     test_add_user()
     test_find_user_by()
     test_update_user()
     test_hash_password()
+    test_register_user()
