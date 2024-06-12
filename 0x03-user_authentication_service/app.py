@@ -2,13 +2,17 @@
 """
 Basic Flask app
 """
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request
 from auth import Auth
+import logging
 
 app = Flask(__name__)
 
 # Instantiate the Auth object
 AUTH = Auth()
+
+# Suppress SQLAlchemy logging
+logging.getLogger('sqlalchemy.engine').setLevel(logging.WARNING)
 
 
 @app.route("/", methods=["GET"])
