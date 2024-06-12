@@ -87,6 +87,21 @@ def test_register_user() -> None:
         print(f"could not create a new user: {err}")
 
 
+def test_valid_login() -> None:
+    """Test the valid_login method of Auth class"""
+    email = 'bob@bob.com'
+    password = 'MyPwdOfBob'
+    auth = Auth()
+
+    auth.register_user(email, password)
+
+    print(auth.valid_login(email, password))  # Expected: True
+
+    print(auth.valid_login(email, "WrongPwd"))  # Expected: False
+
+    print(auth.valid_login("unknown@email", password))  # Expected: False
+
+
 if __name__ == "__main__":
     print_user_table_info()
     test_add_user()
@@ -94,3 +109,4 @@ if __name__ == "__main__":
     test_update_user()
     test_hash_password()
     test_register_user()
+    test_valid_login()
