@@ -24,25 +24,24 @@ def _hash_password(password: str) -> bytes:
 
 
 class Auth:
-    """Auth class to interact with the authentication database.
-    """
+    """Auth class to interact with the authentication database."""
 
     def __init__(self):
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> User:
         """
-        Register a new user.
+        Register a new user with email and password.
 
         Args:
-            email (str): The email of the user.
-            password (str): The password of the user.
+            email (str): The user's email.
+            password (str): The user's password.
 
         Returns:
-            User: The created User object.
+            User: The newly created user.
 
         Raises:
-            ValueError: If a user with the given email already exists.
+            ValueError: If the user already exists.
         """
         try:
             self._db.find_user_by(email=email)
