@@ -5,10 +5,9 @@ Basic Flask app
 from flask import Flask, jsonify, request
 from auth import Auth
 
-app = Flask(__name__)
-
-# Instantiate the Auth object
 AUTH = Auth()
+
+app = Flask(__name__)
 
 
 @app.route("/", methods=["GET"])
@@ -19,7 +18,6 @@ def index():
 
 @app.route("/users", methods=["POST"])
 def users():
-    """Register a new user"""
     email = request.form.get('email')
     password = request.form.get('password')
 
