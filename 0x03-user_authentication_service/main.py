@@ -2,9 +2,9 @@
 """
 Main file
 """
-from user import User
 from db import DB
-from auth import Auth, _hash_password
+from user import User
+from auth import Auth
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 
@@ -47,13 +47,15 @@ try:
 except ValueError:
     print("Error")
 
+# Create an Auth instance
+auth = Auth()
+
 # Testing _hash_password method
-print(_hash_password("Hello Holberton"))
+print(auth._hash_password("Hello Holberton"))
 
 # Testing Auth.register_user method
 email = 'me@me.com'
 password = 'mySecuredPwd'
-auth = Auth()
 try:
     user = auth.register_user(email, password)
     print("successfully created a new user!")
