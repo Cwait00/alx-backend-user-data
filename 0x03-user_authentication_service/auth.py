@@ -7,6 +7,7 @@ import uuid
 from typing import Union
 from sqlalchemy.orm.exc import NoResultFound
 
+
 class Auth:
     """Auth class to interact with the authentication database."""
     def __init__(self):
