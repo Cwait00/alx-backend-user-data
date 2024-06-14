@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.exc import InvalidRequestError
 
 from user import Base, User
@@ -36,17 +36,22 @@ class DB:
 
     def find_user_by(self, **kwargs) -> User:
         """Find a user by keyword arguments"""
-        for key in kwargs.keys():
-            if not hasattr(User, key):
-                raise InvalidRequestError
-        user = self._session.query(User).filter_by(**kwargs).first()
-        if user is None:
-            raise NoResultFound
+        try:
+            user = self._session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
+            raise NoResultFound("No user found with the given attributes")
+        except MultipleResultsFound:
+            raise InvalidRequestError("Multiple users found with the given attributes")
+        except InvalidRequestError:
+            raise InvalidRequestError("Invalid request arguments")
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Update user attributes"""
-        user = self.find_user_by(id=user_id)
+        try:
+            user = self.find_user_by(id=user_id)
+        except NoResultFound:
+            raise ValueError("User not found")
         for key, value in kwargs.items():
             if not hasattr(user, key):
                 raise ValueError(f"Attribute {key} does not exist on User")
